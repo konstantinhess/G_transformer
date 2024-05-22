@@ -596,34 +596,20 @@ class SyntheticCancerDatasetCollection(SyntheticDatasetCollection):
 
         self.train_f = SyntheticCancerDataset(chemo_coeff, radio_coeff, num_patients['train'], window_size, max_seq_length,
                                               'train', lag=lag, treatment_mode=treatment_mode)
-        # select = self.train_f.data['sequence_lengths'] == (max_seq_length-1)
-        # for key, item in self.train_f.data.items():
-        #     self.train_f.data[key] = item[select]
 
         self.val_f = SyntheticCancerDataset(chemo_coeff, radio_coeff, num_patients['val'], window_size, max_seq_length, 'val',
                                             lag=lag, treatment_mode=treatment_mode)
-        # select = self.val_f.data['sequence_lengths'] == (max_seq_length-1)
-        # for key, item in self.val_f.data.items():
-        #     self.val_f.data[key] = item[select]
-
-        self.val_f = self.select_val_data(treatment_sequence, 0) # validation is for one-step ahead, hence projection_horizon=0
 
         self.test_cf_one_step = SyntheticCancerDataset(chemo_coeff, radio_coeff, num_patients['test'], window_size,
                                                        max_seq_length, 'test', mode='counterfactual_one_step', lag=lag,
                                                        treatment_mode=treatment_mode
                                                        )
-        # select = self.test_cf_one_step.data['sequence_lengths'] == (max_seq_length-1)
-        # for key, item in self.test_cf_one_step.data.items():
-        #     self.test_cf_one_step.data[key] = item[select]
 
         self.test_cf_treatment_seq = SyntheticCancerDataset(chemo_coeff, radio_coeff, num_patients['test'], window_size,
                                                             max_seq_length, 'test', mode='counterfactual_treatment_seq',
                                                             projection_horizon=projection_horizon, lag=lag,
                                                             cf_seq_mode=cf_seq_mode, treatment_mode=treatment_mode,
                                                             cf_treatment_sequence=treatment_sequence)
-        # select = self.test_cf_treatment_seq.data['sequence_lengths'] == (max_seq_length-1)
-        # for key, item in self.test_cf_treatment_seq.data.items():
-        #     self.test_cf_treatment_seq.data[key] = item[select]
 
         self.projection_horizon = projection_horizon
         self.autoregressive = True
@@ -631,38 +617,3 @@ class SyntheticCancerDatasetCollection(SyntheticDatasetCollection):
         self.train_scaling_params = self.train_f.get_scaling_params()
 
 
-
-    def select_val_data(self, treatment_sequence, projection_horizon):
-        """
-        Only select validation data where last entries equal the treatment sequence that we train on
-        Args:
-            projection_horizon
-            treatment_sequence
-        Returns:
-            reduced validation dataset
-        """
-        if projection_horizon > 0:
-            treatments = np.concatenate((np.expand_dims(self.val_f.data['chemo_application'],axis=-1),
-                                         np.expand_dims(self.val_f.data['radio_application'],axis=-1)), axis=-1)
-            sequence_lengths = self.val_f.data['sequence_lengths'].astype('int')
-            last_treatments = np.zeros(shape=(treatments.shape[0], projection_horizon, 4))
-            for i in range(treatments.shape[0]):
-                for j,t in enumerate(range(sequence_lengths[i] - projection_horizon, sequence_lengths[i])):
-                    if (treatments[i][t][0] == 0 and treatments[i][t][1] == 0):
-                        last_treatments[i][j] = [1, 0, 0, 0]
-                    elif (treatments[i][t][0] == 1 and treatments[i][t][1] == 0):
-                        last_treatments[i][j] = [0, 1, 0, 0]
-                    elif (treatments[i][t][0] == 0 and treatments[i][t][1] == 1):
-                        last_treatments[i][j] = [0, 0, 1, 0]
-                    elif (treatments[i][t][0] == 1 and treatments[i][t][1] == 1):
-                        last_treatments[i][j] = [0, 0, 0, 1]
-
-            val_flag = (last_treatments == np.array(treatment_sequence)[:projection_horizon, :]).all(axis=(1,2))
-
-            val_f = deepcopy(self.val_f)
-            for key, item in val_f.data.items():
-                val_f.data[key] = item[val_flag]
-            return val_f
-
-        else:
-            return self.val_f

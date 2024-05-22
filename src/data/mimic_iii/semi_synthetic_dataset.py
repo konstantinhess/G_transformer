@@ -644,7 +644,6 @@ class MIMIC3SyntheticDatasetCollection(SyntheticDatasetCollection):
         if split['val'] > 0.0:
             self.val_f = MIMIC3SyntheticDataset(all_vitals_val, static_features_val, synth_outcomes_list, synth_treatments_list,
                                                 treatment_outcomes_influence, 'val')
-            self.val_f = self.select_val_data(treatment_sequence, 0) # validation is for one-step ahead, hence projection_horizon=0
 
         self.test_cf_one_step = \
             MIMIC3SyntheticDataset(all_vitals_test, static_features_test, synth_outcomes_list, synth_treatments_list,
@@ -662,37 +661,3 @@ class MIMIC3SyntheticDatasetCollection(SyntheticDatasetCollection):
         self.autoregressive = autoregressive
         self.has_vitals = True
         self.train_scaling_params = self.train_f.get_scaling_params()
-
-    def select_val_data(self, treatment_sequence, projection_horizon):
-        """
-        Only select validation data where last entries equal the treatment sequence that we train on
-        Args:
-            projection_horizon
-            treatment_sequence
-        Returns:
-            reduced validation dataset
-        """
-        if projection_horizon > 0:
-            treatments = self.val_f.data['current_treatments']
-            sequence_lengths = self.val_f.data['sequence_lengths'].astype('int')
-            last_treatments = np.zeros(shape=(treatments.shape[0], projection_horizon, 3))
-            for i in range(treatments.shape[0]):
-                for j, t in enumerate(range(sequence_lengths[i] - projection_horizon, sequence_lengths[i])):
-                    if treatments[i][t][0] == 1:
-                        last_treatments[i][j][0] = 1
-                    if treatments[i][t][1] == 1:
-                        last_treatments[i][j][1] = 1
-                    if treatments[i][t][2] == 1:
-                        last_treatments[i][j][2] = 1
-
-            val_flag = (last_treatments == np.array(treatment_sequence)[:projection_horizon, :]).all(
-                axis=(1, 2))
-
-            val_f = deepcopy(self.val_f)
-            for key, item in val_f.data.items():
-                val_f.data[key] = item[val_flag]
-            return val_f
-
-        else:
-            return self.val_f
-
