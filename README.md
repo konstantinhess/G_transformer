@@ -88,19 +88,27 @@ The `<dataset>` is specified by:
 **Synthetic**: `cancer_sim`
 
 **Semi-synthetic**: `mimic3_synthetic`
+___
 
 Please use the following commands to run the experiments. 
 ```console
 PYTHONPATH=. CUDA_VISIBLE_DEVICES=<devices> 
-python3 <script> +dataset=<dataset> +backbone=<backbone> +<hyperparameter> exp.seed=101 exp.logging=True 
+python3 <script> +dataset=<dataset> +backbone=<backbone> +<hyperparameter> exp.seed=<seed> exp.logging=True 
 ```
 
 ## Example usage
-To run our GT with optimized hyperparameters on synthetic data on random seeds 101--105, use the command:
+To run our GT with optimized hyperparameters on synthetic data with random seeds 101--105 and confounding level 15.0, use the command:
 ```console
 PYTHONPATH=. CUDA_VISIBLE_DEVICES=<devices> 
-python3 runnables/train_gtransformer.py --multirun +dataset=cancer_sim +backbone=gt +backbone/gt_hparams='cancer_sim_tuned' exp.seed=101,102,103,104,105
+python3 runnables/train_gtransformer.py --multirun +dataset=cancer_sim +backbone=gt +backbone/gt_hparams='cancer_sim_tuned' dataset.coeff=15.0 exp.seed=101,102,103,104,105
 ```
 
+To run our GT with optimized hyperparameters on semi-synthetic data with random seeds 101--105 and 2000 samples, use the command:
+```console
+PYTHONPATH=. CUDA_VISIBLE_DEVICES=<devices> 
+python3 runnables/train_gtransformer.py --multirun +dataset=mimic3_synthetic +backbone=gt +backbone/gt_hparams='mimic3_synthetic_tuned' dataset.max_number=2000 exp.seed=101,102,103,104,105
+```
 Note that, before running semi-synthetic experiments, the MIMIC-III-extract dataset ([all_hourly_data.h5](https://github.com/MLforHealth/MIMIC_Extract)) needs to be placed in `data/processed/`.
+
+___
 
