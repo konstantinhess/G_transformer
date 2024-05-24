@@ -48,7 +48,7 @@ def main(args: DictConfig):
 
     # MlFlow Logger
     if args.exp.logging:
-        experiment_name = f'{args.model.name}/{args.dataset.name}_FINAL'
+        experiment_name = f'{args.model.name}/{args.dataset.name}'
         mlf_logger = FilteringMlFlowLogger(filter_submodels=RMSN.possible_model_types, experiment_name=experiment_name,
                                            tracking_uri=args.exp.mlflow_uri)
         encoder_callbacks += [LearningRateMonitor(logging_interval='epoch')]

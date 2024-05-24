@@ -46,7 +46,7 @@ def main(args: DictConfig):
 
     # MlFlow Logger
     if args.exp.logging:
-        experiment_name = f'{args.model.name}/{args.dataset.name}_FINAL'
+        experiment_name = f'{args.model.name}/{args.dataset.name}'
         mlf_logger = FilteringMlFlowLogger(filter_submodels=[], experiment_name=experiment_name, tracking_uri=args.exp.mlflow_uri, run_name='0') # exclude submodels from logging
         gt_callbacks += [LearningRateMonitor(logging_interval='epoch')]
         artifacts_path = hydra.utils.to_absolute_path(mlf_logger.experiment.get_run(mlf_logger.run_id).info.artifact_uri)
@@ -102,7 +102,7 @@ def main(args: DictConfig):
     results.update(encoder_results)
     # ============================== multi-step ahead prediction ===========================================
 
-    for t in [1]: #2,3,4,5]: #range(1, args.dataset.projection_horizon+1): #range(2, args.dataset.projection_horizon + 1):
+    for t in range(1, args.dataset.projection_horizon+1):
         seed_everything(args.exp.seed)  # global seed -> if training breaks for some reason, start again with same seed
         test_rmses = {}
         decoder_results = {

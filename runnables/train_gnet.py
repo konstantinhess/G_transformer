@@ -47,7 +47,7 @@ def main(args: DictConfig):
 
     # MlFlow Logger
     if args.exp.logging:
-        experiment_name = f'{args.model.name}/{args.dataset.name}_FINAL'
+        experiment_name = f'{args.model.name}/{args.dataset.name}'
         mlf_logger = FilteringMlFlowLogger(filter_submodels=[], experiment_name=experiment_name, tracking_uri=args.exp.mlflow_uri)
         model_callbacks = [LearningRateMonitor(logging_interval='epoch')]
         artifacts_path = hydra.utils.to_absolute_path(mlf_logger.experiment.get_run(mlf_logger.run_id).info.artifact_uri)
