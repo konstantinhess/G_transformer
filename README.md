@@ -17,11 +17,11 @@ To start an experiments server, run:
 
 `mlflow server --port=3333`
 
-Connect via ssh to access MlFlow we UI:
+Connect via ssh to access the MlFlow UI:
 
 `ssh -N -f -L localhost:3333:localhost:3333 <username>@<server-link>`
 
-Then, one can go to local browser http://localhost:3333.
+Then, one can go to the local browser <http://localhost:3333>.
 
 ## Experiments
 
