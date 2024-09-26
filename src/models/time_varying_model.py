@@ -260,8 +260,9 @@ class TimeVaryingCausalModel(LightningModule):
 
     def get_normalised_n_step_rmses(self, dataset: Dataset, datasets_mc: List[Dataset] = None):
         logger.info(f'RMSE calculation for {dataset.subset_name}.')
-        assert self.model_type == 'decoder' or self.model_type == 'multi' or self.model_type == 'g_net' or \
-               self.model_type == 'msm_regressor' or self.model_type == 'gt'
+        assert (self.model_type == 'decoder' or self.model_type == 'multi' or self.model_type == 'g_net' or \
+               self.model_type == 'msm_regressor' or self.model_type == 'gt' or self.model_type == 'grnn' or \
+                self.model_type == 'bt')
         assert hasattr(dataset, 'data_processed_seq')
 
         unscale = self.hparams.exp.unscale_rmse
@@ -299,7 +300,7 @@ class TimeVaryingCausalModel(LightningModule):
         """
         self.prepare_data()
         sub_args = self.hparams.model[self.model_type]
-        if self.model_type == 'gt':  # 'gt' projection horizon needs to be explicitly set to 0 for validation
+        if self.model_type == 'gt' or self.model_type == 'grnn' or self.model_type == 'bt':  # projection horizon needs to be explicitly set to 0 for validation
             assert self.projection_horizon == 0
 
         logger.info(f"Running hyperparameters selection with {sub_args['tune_range']} trials")
