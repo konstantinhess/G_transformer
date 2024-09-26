@@ -41,6 +41,9 @@ The training `<script>` for each different models specified by:
 
 **GT**: `runnables/train_gtransformer.py`
 
+**G-LSTM** (ablation): `runnables/train_grnn.py`
+
+**BT** (ablation): `runnables/train_bt.py`
 ___
 
 The `<backbone>` is specified by:
@@ -56,6 +59,10 @@ The `<backbone>` is specified by:
 **G-Net**: `gnet`
 
 **GT**: `gt`
+
+**G-LSTM** (ablation): `grnn`
+
+**BT** (ablation): `bt`
 ___
 
 The `<hyperparameter>` configuration for each model is specified by:
@@ -71,6 +78,11 @@ The `<hyperparameter>` configuration for each model is specified by:
 **G-Net**: `backbone/gnet_hparams='HPARAMS'`
 
 **GT**: `backbone/gt_hparams='HPARAMS'`
+
+**G-LSTM** (ablation): `backbone/grnn_hparams='HPARAMS'`
+
+**BT** (ablation): `backbone/bt_hparams='HPARAMS'`
+
 
 `HPARAMS` is either one of:
 `cancer_sim_hparams_grid.yaml` / `cancer_sim_tuned.yaml`,
