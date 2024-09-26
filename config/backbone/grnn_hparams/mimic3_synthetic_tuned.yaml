@@ -1,0 +1,17 @@
+# @package _global_
+dataset:
+  max_number: 1000
+
+model:
+  grnn:
+    optimizer:
+      learning_rate: 0.001
+    batch_size: 32
+    seq_hidden_units: 74
+    hr_size: 37
+    fc_hidden_units: 37
+    dropout_rate: 0.1
+    num_layer: 2
+
+exp:
+  max_epochs: 100

@@ -1,0 +1,29 @@
+# @package _global_
+model:
+  name: GRNN
+  grnn:                                  # Missing hyperparameters are to be filled in command line / with tune_hparams = True / selected with +backbone/ct_hparams=...
+    _target_: src.models.grnn.GRNN
+    max_seq_length: ${sum:${dataset.max_seq_length},${dataset.projection_horizon}}  # Will be calculated dynamically
+    seq_hidden_units:                    # lstm hidden units (d_h )
+    hr_size:                            # hidden representation size
+    fc_hidden_units:
+    dropout_rate:                        # Dropout between transformer layers + output layers + attentional dropout
+    num_layer: 1
+    max_grad_norm: 0.0
+    batch_size:
+
+    projection_horizon: 0
+
+    optimizer:
+      optimizer_cls: adam
+      learning_rate:
+      weight_decay: 0.0
+      lr_scheduler: False
+
+    tune_hparams: False
+    tune_range: 50
+    hparams_grid:
+    resources_per_trial:
+
+exp:
+  update_alpha: False
